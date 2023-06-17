@@ -31,13 +31,33 @@ def get_categories(file: Path) -> str:
 
 
 def sort_folder(path: Path) -> None:
+    results_before = {cat: 0 for cat in CATEGORIES}
+
     for item in path.glob("**/*"):
         if item.is_file():
-            cat = get_categories(item)
-            move_file(item, path, cat)
+            category = get_categories(item)
+            results_before[category] += 1
 
-    # delete_empty_folders(path)
+    for item in path.glob("**/*"):
+        if item.is_file():
+            category = get_categories(item)
+            move_file(item, path, category)
+
+    results_after = {cat: 0 for cat in CATEGORIES}
+
+    for item in path.glob("**/*"):
+        if item.is_file():
+            category = get_categories(item)
+            results_after[category] += 1
+
+    delete_empty_folders(path)
     # unpack_archives(path)
+
+    print("Results:")
+    for category in CATEGORIES:
+        print(f"Category: {category}")
+        print(f"Moved: {results_after[category]} files")
+        print()
 
 
 def delete_empty_folders(path: Path):
